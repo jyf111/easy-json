@@ -1,0 +1,3 @@
+/home/jyf111/easy-json/build/CMakeFiles/rebuild_cache.dir
+/home/jyf111/easy-json/build/CMakeFiles/edit_cache.dir
+/home/jyf111/easy-json/build/CMakeFiles/main.dir
