@@ -123,32 +123,32 @@ main/fast:
 	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/build
 .PHONY : main/fast
 
-json.o: json.cpp.o
+src/json.o: src/json.cpp.o
 
-.PHONY : json.o
+.PHONY : src/json.o
 
 # target to build an object file
-json.cpp.o:
-	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/json.cpp.o
-.PHONY : json.cpp.o
+src/json.cpp.o:
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/json.cpp.o
+.PHONY : src/json.cpp.o
 
-json.i: json.cpp.i
+src/json.i: src/json.cpp.i
 
-.PHONY : json.i
+.PHONY : src/json.i
 
 # target to preprocess a source file
-json.cpp.i:
-	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/json.cpp.i
-.PHONY : json.cpp.i
+src/json.cpp.i:
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/json.cpp.i
+.PHONY : src/json.cpp.i
 
-json.s: json.cpp.s
+src/json.s: src/json.cpp.s
 
-.PHONY : json.s
+.PHONY : src/json.s
 
 # target to generate assembly for a file
-json.cpp.s:
-	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/json.cpp.s
-.PHONY : json.cpp.s
+src/json.cpp.s:
+	$(MAKE) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/src/json.cpp.s
+.PHONY : src/json.cpp.s
 
 # Help Target
 help:
@@ -159,9 +159,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... main"
-	@echo "... json.o"
-	@echo "... json.i"
-	@echo "... json.s"
+	@echo "... src/json.o"
+	@echo "... src/json.i"
+	@echo "... src/json.s"
 .PHONY : help
 
 

@@ -6,13 +6,13 @@
 
 #IncludeRegexTransform: 
 
-/home/jyf111/easy-json/json.cpp
+/home/jyf111/easy-json/src/json.cpp
 json.h
-/home/jyf111/easy-json/json.h
+/home/jyf111/easy-json/src/json.h
 iostream
 -
 
-/home/jyf111/easy-json/json.h
+/home/jyf111/easy-json/src/json.h
 memory
 -
 string
