@@ -1,6 +1,7 @@
 #include "json.h"
 
 #include <iostream>
+#include <assert.h>
 
 json::json() {
     type = JSON_NULL;
@@ -56,6 +57,26 @@ string json::toString() {
 
 jsonType json::getType() {
     return type;
+}
+
+bool json::getB() {
+    return b;
+}
+
+double json::getNum() {
+    return num;
+}
+
+string json::getValue() {
+    return value;
+}
+
+vector<shared_ptr<json>>& json::getArray() {
+    return array;
+}
+
+vector<pair<string, shared_ptr<json>>>& json::getObject() {
+    return object;
 }
 
 bool isWhiteSpace(string::const_iterator it) {
@@ -177,18 +198,73 @@ void parser::init(string _jstr) {
     it = cbegin(jstr);
 }
 
+void parser::genObject(shared_ptr<json> rt) {
+    assert(rt->getType()==JSON_OBJECT);
+    auto object = rt->getObject();
+    for(auto& [key, value] : object) {
+        fout << "subgraph cluster" + std::to_string(subg_id++) + "{\n";
+        fout << "label = <<FONT COLOR=\"red\">" + key + "</FONT>>\n";
+        genElement(value);
+        fout << "}\n";
+    }
+}
+
+void parser::genElement(shared_ptr<json> value) {
+    switch(value->getType()) {
+        case JSON_NULL: 
+            fout << std::to_string(node_id++) + " [label=\"null\"]\n";
+            break;
+        case JSON_BOOLEAN: 
+            fout << std::to_string(node_id++) + " [label=\"" + (value->getB() ? "true" : "false") + "\"]\n";
+            break;
+        case JSON_NUMBER: 
+            fout << std::to_string(node_id++) + " [label=\"" + std::to_string(value->getNum()) + "\"]\n";
+            break;
+        case JSON_STRING: 
+            fout << std::to_string(node_id++) + " [label=\"" + value->getValue() + "\"]\n";
+            break;
+        case JSON_ARRAY:
+            {
+                auto array = value->getArray();
+                for(auto& item : array) {
+                    genElement(item);
+                }
+            }
+            break;
+        default: 
+            genObject(value);
+    }
+}
+
+void parser::show(string file) {
+    fout.open(file, std::ios::out);
+    if(!fout.is_open()) {
+        std::cerr << "Can't open the file" << '\n';
+        exit(1);
+    } 
+    fout << "graph {node [shape=\"box\"]\ncompound = true\n";
+    genObject(rt);
+    fout << "}";
+    fout.close();
+}
+
 int main() {
     parser p;
     p.init(R"( {
-        "apple": "red",
+        "color": "red",
         "weight": 12.0,   
         "nothing": null,
         "quality": "high",
-        "price": [12.0, 21.2, 31.3]   
+        "list": [12.0, 21.2, 31.3],
+        "object": {
+            "boolean": true,
+            "name": "apple" 
+        }
     } )");
     p.rt = p.parse();
     if(p.rt!=nullptr) {
         std::cout << p.rt->toString() << std::endl;
+        p.show("test.dot");
     }
     return 0;
 }
