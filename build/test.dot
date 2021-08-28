@@ -1,5 +1,6 @@
 graph {node [shape="box"]
 compound = true
+label = "js object"
 subgraph cluster0{
 label = <<FONT COLOR="red">color</FONT>>
 0 [label="red"]
@@ -31,6 +32,10 @@ label = <<FONT COLOR="red">boolean</FONT>>
 subgraph cluster7{
 label = <<FONT COLOR="red">name</FONT>>
 8 [label="apple"]
+}
+subgraph cluster8{
+label = <<FONT COLOR="red">time</FONT>>
+9 [label="2021-08"]
 }
 }
 }

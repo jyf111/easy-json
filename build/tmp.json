@@ -1,0 +1,12 @@
+{
+    "color": "red",
+    "weight": 12.0,   
+    "nothing": null,
+    "quality": "high",
+    "list": [12.0, 21.2, 31.3],
+    "object": {
+        "boolean": true,
+        "name": "apple", 
+        "time": "2021-08"
+    }
+}

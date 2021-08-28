@@ -193,8 +193,13 @@ shared_ptr<json> parser::parse() {
     return rt;
 }
 
-void parser::init(string _jstr) {
-    jstr = _jstr;
+void parser::init(string file) {
+    std::fstream fin(file);
+    if(!fin.is_open()) {
+        std::cerr << "Can't open the file" << '\n';
+        exit(1);
+    }
+    jstr.assign((std::istreambuf_iterator<char>(fin)), std::istreambuf_iterator<char>());
     it = cbegin(jstr);
 }
 
@@ -242,29 +247,23 @@ void parser::show(string file) {
         std::cerr << "Can't open the file" << '\n';
         exit(1);
     } 
-    fout << "graph {node [shape=\"box\"]\ncompound = true\n";
+    fout << "graph {node [shape=\"box\"]\ncompound = true\nlabel = \"js object\"\n";
     genObject(rt);
     fout << "}";
     fout.close();
 }
 
-int main() {
+int main(int argc, char *argv[]) {
     parser p;
-    p.init(R"( {
-        "color": "red",
-        "weight": 12.0,   
-        "nothing": null,
-        "quality": "high",
-        "list": [12.0, 21.2, 31.3],
-        "object": {
-            "boolean": true,
-            "name": "apple" 
-        }
-    } )");
+    if(argc!=2) {
+        std::cerr << "Please input the json file correctly!" << std::endl;
+        return 1;
+    }
+    p.init(argv[1]);
     p.rt = p.parse();
     if(p.rt!=nullptr) {
         std::cout << p.rt->toString() << std::endl;
-        p.show("test.dot");
+        p.show("tmp.dot");
     }
     return 0;
 }

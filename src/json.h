@@ -56,7 +56,7 @@ public:
     std::fstream fout;
     bool match(char c, bool omit=true); // omit white spaces defaultly
     bool match(string s);
-    void init(string _jstr);
+    void init(string file);
     shared_ptr<json> parse();
     void genElement(shared_ptr<json> value);
     void genObject(shared_ptr<json> rt);
