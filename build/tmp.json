@@ -7,6 +7,8 @@
     "object": {
         "boolean": true,
         "name": "apple", 
-        "time": "2021-08"
+        "time": "2021-08",
+        "emptyobject": {},
+        "sonobject": { "name": "pineapple" }
     }
 }

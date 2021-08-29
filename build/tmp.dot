@@ -1,0 +1,52 @@
+graph {
+    node [shape=box, color=cadetblue, style=filled]
+    label = "tmp.json"
+    subgraph cluster0 {
+        label = <<FONT COLOR="red">color</FONT>>
+        0 [label="red"]
+    }
+    subgraph cluster1 {
+        label = <<FONT COLOR="red">weight</FONT>>
+        1 [label="12.000000"]
+    }
+    subgraph cluster2 {
+        label = <<FONT COLOR="red">nothing</FONT>>
+        2 [label="null"]
+    }
+    subgraph cluster3 {
+        label = <<FONT COLOR="red">quality</FONT>>
+        3 [label="high"]
+    }
+    subgraph cluster4 {
+        label = <<FONT COLOR="red">list</FONT>>
+        4 [label="12.000000"]
+        5 [label="21.200000"]
+        6 [label="31.300000"]
+    }
+    subgraph cluster5 {
+        label = <<FONT COLOR="red">object</FONT>>
+        subgraph cluster6 {
+            label = <<FONT COLOR="red">boolean</FONT>>
+            7 [label="true"]
+        }
+        subgraph cluster7 {
+            label = <<FONT COLOR="red">name</FONT>>
+            8 [label="apple"]
+        }
+        subgraph cluster8 {
+            label = <<FONT COLOR="red">time</FONT>>
+            9 [label="2021-08"]
+        }
+        subgraph cluster9 {
+            label = <<FONT COLOR="red">emptyobject</FONT>>
+            10 [style="invis"]
+        }
+        subgraph cluster10 {
+            label = <<FONT COLOR="red">sonobject</FONT>>
+            subgraph cluster11 {
+                label = <<FONT COLOR="red">name</FONT>>
+                11 [label="pineapple"]
+            }
+        }
+    }
+}

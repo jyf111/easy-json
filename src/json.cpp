@@ -27,7 +27,9 @@ json::json(vector<pair<string, shared_ptr<json>>> _object) : object(_object) {
     type = JSON_OBJECT;
 }
 
-string json::toString() {
+string tab(int cnt) { return string(cnt<<2, ' '); }
+
+string json::toString(int indent) {
     string s;
     bool tag = true;
     switch(type) {
@@ -43,15 +45,16 @@ string json::toString() {
                 s += item->toString();
             }
             return s + "]";
-        default: // object TODO: fix indent 
+        default: 
             if(object.empty()) return "{}";
             s = "{";
+            indent++;
             for(auto& attribute : object) {
-                if(!tag) s += ",\n  ";
-                else s += "\n  ", tag = false;
-                s += '"' + attribute.first + "\": " + attribute.second->toString(); 
+                if(!tag) s += ",\n" + tab(indent);
+                else s += "\n" + tab(indent), tag = false;
+                s += '"' + attribute.first + "\": " + attribute.second->toString(indent); 
             }
-            return s + "\n}";
+            return s + "\n" + tab(indent-1) + "}";
     }
 }
 
@@ -196,59 +199,63 @@ shared_ptr<json> parser::parse() {
 void parser::init(string file) {
     std::fstream fin(file);
     if(!fin.is_open()) {
-        std::cerr << "Can't open the file" << '\n';
+        std::cerr << "Can't open the json file!" << std::endl;
         exit(1);
     }
     jstr.assign((std::istreambuf_iterator<char>(fin)), std::istreambuf_iterator<char>());
     it = cbegin(jstr);
 }
 
-void parser::genObject(shared_ptr<json> rt) {
+void parser::genObject(shared_ptr<json> rt, int indent) {
     assert(rt->getType()==JSON_OBJECT);
     auto object = rt->getObject();
-    for(auto& [key, value] : object) {
-        fout << "subgraph cluster" + std::to_string(subg_id++) + "{\n";
-        fout << "label = <<FONT COLOR=\"red\">" + key + "</FONT>>\n";
-        genElement(value);
-        fout << "}\n";
+    if(object.empty()) { // empty subgraph will not been shown
+        fout << tab(indent) + std::to_string(node_id++) + " [style=\"invis\"]\n";
+    } else {
+        for(auto& [key, value] : object) {
+            fout << tab(indent) + "subgraph cluster" + std::to_string(subg_id++) + " {\n";
+            fout << tab(indent+1) + "label = <<FONT COLOR=\"red\">" + key + "</FONT>>\n";
+            genElement(value, indent+1);
+            fout << tab(indent) + "}\n";
+        }
     }
 }
 
-void parser::genElement(shared_ptr<json> value) {
+void parser::genElement(shared_ptr<json> value, int indent) {
     switch(value->getType()) {
         case JSON_NULL: 
-            fout << std::to_string(node_id++) + " [label=\"null\"]\n";
+            fout << tab(indent) + std::to_string(node_id++) + " [label=\"null\"]\n";
             break;
         case JSON_BOOLEAN: 
-            fout << std::to_string(node_id++) + " [label=\"" + (value->getB() ? "true" : "false") + "\"]\n";
+            fout << tab(indent) + std::to_string(node_id++) + " [label=\"" + (value->getB() ? "true" : "false") + "\"]\n";
             break;
         case JSON_NUMBER: 
-            fout << std::to_string(node_id++) + " [label=\"" + std::to_string(value->getNum()) + "\"]\n";
+            fout << tab(indent) + std::to_string(node_id++) + " [label=\"" + std::to_string(value->getNum()) + "\"]\n";
             break;
         case JSON_STRING: 
-            fout << std::to_string(node_id++) + " [label=\"" + value->getValue() + "\"]\n";
+            fout << tab(indent) + std::to_string(node_id++) + " [label=\"" + value->getValue() + "\"]\n";
             break;
         case JSON_ARRAY:
             {
                 auto array = value->getArray();
                 for(auto& item : array) {
-                    genElement(item);
+                    genElement(item, indent);
                 }
             }
             break;
         default: 
-            genObject(value);
+            genObject(value, indent);
     }
 }
 
-void parser::show(string file) {
+void parser::show(string file, string json_file) {
     fout.open(file, std::ios::out);
     if(!fout.is_open()) {
-        std::cerr << "Can't open the file" << '\n';
+        std::cerr << "Can't open the file!" << std::endl;
         exit(1);
     } 
-    fout << "graph {node [shape=\"box\"]\ncompound = true\nlabel = \"js object\"\n";
-    genObject(rt);
+    fout << "graph {\n" + tab(1) + "node [shape=box, color=cadetblue, style=filled]\n" + tab(1) + "label = \"" + json_file + "\"\n";
+    genObject(rt, 1);
     fout << "}";
     fout.close();
 }
@@ -259,11 +266,12 @@ int main(int argc, char *argv[]) {
         std::cerr << "Please input the json file correctly!" << std::endl;
         return 1;
     }
-    p.init(argv[1]);
+    string json_file = argv[1];
+    p.init(json_file);
     p.rt = p.parse();
     if(p.rt!=nullptr) {
         std::cout << p.rt->toString() << std::endl;
-        p.show("tmp.dot");
+        p.show("tmp.dot", json_file);
     }
     return 0;
 }
