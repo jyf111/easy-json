@@ -255,9 +255,9 @@ void parser::genArray(shared_ptr<json> value, int indent, string label) {
             genAtom(item, indent+2);
             fout << tab(indent+1) << "}\n";
         } else if(item->getType()==JSON_ARRAY) {
-            genArray(item, indent+2, "["+std::to_string(idx++)+"]");
+            genArray(item, indent+1, "["+std::to_string(idx++)+"]");
         } else {
-            genObject(item, indent+2, "["+std::to_string(idx++)+"]");
+            genObject(item, indent+1, "["+std::to_string(idx++)+"]");
         }
     }
     fout << tab(indent) + "}\n";

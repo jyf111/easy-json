@@ -42,39 +42,39 @@ digraph {
           color = black
           5 [label="-21.2"]
         }
-          subgraph cluster9 {
-            label = "[2]"
+        subgraph cluster9 {
+          label = "[2]"
+          color = black
+          subgraph cluster10 {
+            label = "[0]"
             color = black
-            subgraph cluster10 {
-              label = "[0]"
-              color = black
-              6 [label="hello"]
-            }
-            subgraph cluster11 {
-              label = "[1]"
-              color = black
-              7 [label="null"]
-            }
+            6 [label="hello"]
           }
+          subgraph cluster11 {
+            label = "[1]"
+            color = black
+            7 [label="null"]
+          }
+        }
         subgraph cluster12 {
           label = "[3]"
           color = black
           8 [label="false"]
         }
-          subgraph cluster13 {
-            label = "[4]"
-            color = black
-            subgraph cluster14 {
-              label = <<B><FONT COLOR="red">grade</FONT></B>>
-              color = white
-              9 [label="90"]
-            }
-            subgraph cluster15 {
-              label = <<B><FONT COLOR="red">mark</FONT></B>>
-              color = white
-              10 [label="false"]
-            }
+        subgraph cluster13 {
+          label = "[4]"
+          color = black
+          subgraph cluster14 {
+            label = <<B><FONT COLOR="red">grade</FONT></B>>
+            color = white
+            9 [label="90"]
           }
+          subgraph cluster15 {
+            label = <<B><FONT COLOR="red">mark</FONT></B>>
+            color = white
+            10 [label="false"]
+          }
+        }
       }
     }
     subgraph cluster16 {
