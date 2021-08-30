@@ -3,7 +3,7 @@
     "weight": 12.0,   
     "nothing": null,
     "quality": "high",
-    "list": [12.0, 21.2, 31.3],
+    "list": [12.0, -21.2, ["hello", null], false, {"grade":90.0, "mark":false}],
     "object": {
         "boolean": true,
         "name": "apple", 

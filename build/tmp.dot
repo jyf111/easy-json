@@ -1,52 +1,126 @@
-graph {
-    node [shape=box, color=cadetblue, style=filled]
-    label = "tmp.json"
-    subgraph cluster0 {
-        label = <<FONT COLOR="red">color</FONT>>
-        0 [label="red"]
-    }
+digraph {
+  node [shape=ellipse, color=cadetblue, style=filled]
+  label = "tmp.json"
+  edge [minlen=0.1]
+  compound = true
+  subgraph cluster0 {
+    label = ""
+    color = black
     subgraph cluster1 {
-        label = <<FONT COLOR="red">weight</FONT>>
-        1 [label="12.000000"]
+      label = <<B><FONT COLOR="red">color</FONT></B>>
+      color = white
+      0 [label="red"]
     }
     subgraph cluster2 {
-        label = <<FONT COLOR="red">nothing</FONT>>
-        2 [label="null"]
+      label = <<B><FONT COLOR="red">weight</FONT></B>>
+      color = white
+      1 [label="12"]
     }
     subgraph cluster3 {
-        label = <<FONT COLOR="red">quality</FONT>>
-        3 [label="high"]
+      label = <<B><FONT COLOR="red">nothing</FONT></B>>
+      color = white
+      2 [label="null"]
     }
     subgraph cluster4 {
-        label = <<FONT COLOR="red">list</FONT>>
-        4 [label="12.000000"]
-        5 [label="21.200000"]
-        6 [label="31.300000"]
+      label = <<B><FONT COLOR="red">quality</FONT></B>>
+      color = white
+      3 [label="high"]
     }
     subgraph cluster5 {
-        label = <<FONT COLOR="red">object</FONT>>
-        subgraph cluster6 {
-            label = <<FONT COLOR="red">boolean</FONT>>
-            7 [label="true"]
-        }
+      label = <<B><FONT COLOR="red">list</FONT></B>>
+      color = white
+      subgraph cluster6 {
+        label = ""
+        color = black
         subgraph cluster7 {
-            label = <<FONT COLOR="red">name</FONT>>
-            8 [label="apple"]
+          label = "[0]"
+          color = black
+          4 [label="12"]
         }
         subgraph cluster8 {
-            label = <<FONT COLOR="red">time</FONT>>
-            9 [label="2021-08"]
+          label = "[1]"
+          color = black
+          5 [label="-21.2"]
         }
-        subgraph cluster9 {
-            label = <<FONT COLOR="red">emptyobject</FONT>>
-            10 [style="invis"]
-        }
-        subgraph cluster10 {
-            label = <<FONT COLOR="red">sonobject</FONT>>
-            subgraph cluster11 {
-                label = <<FONT COLOR="red">name</FONT>>
-                11 [label="pineapple"]
+          subgraph cluster9 {
+            label = "[2]"
+            color = black
+            subgraph cluster10 {
+              label = "[0]"
+              color = black
+              6 [label="hello"]
             }
+            subgraph cluster11 {
+              label = "[1]"
+              color = black
+              7 [label="null"]
+            }
+          }
+        subgraph cluster12 {
+          label = "[3]"
+          color = black
+          8 [label="false"]
         }
+          subgraph cluster13 {
+            label = "[4]"
+            color = black
+            subgraph cluster14 {
+              label = <<B><FONT COLOR="red">grade</FONT></B>>
+              color = white
+              9 [label="90"]
+            }
+            subgraph cluster15 {
+              label = <<B><FONT COLOR="red">mark</FONT></B>>
+              color = white
+              10 [label="false"]
+            }
+          }
+      }
     }
+    subgraph cluster16 {
+      label = <<B><FONT COLOR="red">object</FONT></B>>
+      color = white
+      subgraph cluster17 {
+        label = ""
+        color = black
+        subgraph cluster18 {
+          label = <<B><FONT COLOR="red">boolean</FONT></B>>
+          color = white
+          11 [label="true"]
+        }
+        subgraph cluster19 {
+          label = <<B><FONT COLOR="red">name</FONT></B>>
+          color = white
+          12 [label="apple"]
+        }
+        subgraph cluster20 {
+          label = <<B><FONT COLOR="red">time</FONT></B>>
+          color = white
+          13 [label="2021-08"]
+        }
+        subgraph cluster21 {
+          label = <<B><FONT COLOR="red">emptyobject</FONT></B>>
+          color = white
+          subgraph cluster22 {
+            label = ""
+            color = black
+            14 [style="invis"]
+          }
+        }
+        subgraph cluster23 {
+          label = <<B><FONT COLOR="red">sonobject</FONT></B>>
+          color = white
+          subgraph cluster24 {
+            label = ""
+            color = black
+            subgraph cluster25 {
+              label = <<B><FONT COLOR="red">name</FONT></B>>
+              color = white
+              15 [label="pineapple"]
+            }
+          }
+        }
+      }
+    }
+  }
 }

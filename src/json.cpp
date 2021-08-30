@@ -27,22 +27,29 @@ json::json(vector<pair<string, shared_ptr<json>>> _object) : object(_object) {
     type = JSON_OBJECT;
 }
 
-string tab(int cnt) { return string(cnt<<2, ' '); }
+#define TAB_SIZE 2
+string tab(int cnt) { return string(cnt*TAB_SIZE, ' '); }
 
-string json::toString(int indent) {
+string toString(double num) {
+    static char buf[32];
+    snprintf(buf, sizeof(buf), "%.16g", num);
+    return string(buf);
+}
+
+string json::dump(int indent) {
     string s;
     bool tag = true;
     switch(type) {
         case JSON_NULL: return "null";
         case JSON_BOOLEAN: return (b ? "true" : "false");
-        case JSON_NUMBER: return std::to_string(num);
+        case JSON_NUMBER: return toString(num);
         case JSON_STRING: return value;
         case JSON_ARRAY: 
             s = "[";
             for(auto& item : array) {
                 if(!tag) s += ", ";
                 else tag = false;
-                s += item->toString();
+                s += item->dump();
             }
             return s + "]";
         default: 
@@ -52,7 +59,7 @@ string json::toString(int indent) {
             for(auto& attribute : object) {
                 if(!tag) s += ",\n" + tab(indent);
                 else s += "\n" + tab(indent), tag = false;
-                s += '"' + attribute.first + "\": " + attribute.second->toString(indent); 
+                s += '"' + attribute.first + "\": " + attribute.second->dump(indent); 
             }
             return s + "\n" + tab(indent-1) + "}";
     }
@@ -80,6 +87,10 @@ vector<shared_ptr<json>>& json::getArray() {
 
 vector<pair<string, shared_ptr<json>>>& json::getObject() {
     return object;
+}
+
+bool json::isAtom() {
+    return type!=JSON_ARRAY && type!=JSON_OBJECT;
 }
 
 bool isWhiteSpace(string::const_iterator it) {
@@ -111,13 +122,13 @@ shared_ptr<json> parser::parse() {
     shared_ptr<json> rt;
     while(it!=cend(jstr) && isWhiteSpace(it)) ++it;
     if(it==cend(jstr)) return nullptr;
-    if(isDigit(it) || *it=='.') { // number
+    if(isDigit(it) || *it=='.' || *it=='-') { // number
         string number;
         do {
             number += *it;
             ++it;
         } while(it!=cend(jstr) && (isDigit(it) || *it=='.'));
-        rt = make_shared<json>(stod(number)); //TODO accuracy
+        rt = make_shared<json>(std::strtod(number.c_str(), nullptr)); //TODO accuracy
     } else if(*it=='[') { // array
         vector<shared_ptr<json>> array;
         ++it;
@@ -206,45 +217,67 @@ void parser::init(string file) {
     it = cbegin(jstr);
 }
 
-void parser::genObject(shared_ptr<json> rt, int indent) {
+void parser::genObject(shared_ptr<json> rt, int indent, string label) {
     assert(rt->getType()==JSON_OBJECT);
     auto object = rt->getObject();
+    indent++;
+    fout << tab(indent-1) + "subgraph cluster" + std::to_string(subg_id++) + " {\n" 
+            + tab(indent) + "label = \"" + label + "\"\n"
+            + tab(indent) + "color = black\n";
     if(object.empty()) { // empty subgraph will not been shown
         fout << tab(indent) + std::to_string(node_id++) + " [style=\"invis\"]\n";
     } else {
         for(auto& [key, value] : object) {
-            fout << tab(indent) + "subgraph cluster" + std::to_string(subg_id++) + " {\n";
-            fout << tab(indent+1) + "label = <<FONT COLOR=\"red\">" + key + "</FONT>>\n";
-            genElement(value, indent+1);
+            fout << tab(indent) + "subgraph cluster" + std::to_string(subg_id++) + " {\n"
+                + tab(indent+1) + "label = <<B><FONT COLOR=\"red\">" + key + "</FONT></B>>\n"
+                + tab(indent+1) + "color = white\n";
+            if(value->isAtom()) genAtom(value, indent+1);
+            else if(value->getType()==JSON_ARRAY) genArray(value, indent+1);
+            else genObject(value, indent+1);
             fout << tab(indent) + "}\n";
         }
     }
+    fout << tab(indent-1) << "}\n";
 }
 
-void parser::genElement(shared_ptr<json> value, int indent) {
+void parser::genArray(shared_ptr<json> value, int indent, string label) {
+    assert(value->getType()==JSON_ARRAY);
+    fout << tab(indent) + "subgraph cluster" + std::to_string(subg_id++) + " {\n" 
+        + tab(indent+1) + "label = \"" + label + "\"\n"
+        + tab(indent+1) + "color = black\n";
+    auto array = value->getArray();
+    int idx = 0;
+    for(auto& item : array) {
+        if(item->isAtom()) {
+            fout << tab(indent+1) + "subgraph cluster" + std::to_string(subg_id++) + " {\n"
+                + tab(indent+2) + "label = \"[" + std::to_string(idx++) + "]\"\n"
+                + tab(indent+2) + "color = black\n";
+            genAtom(item, indent+2);
+            fout << tab(indent+1) << "}\n";
+        } else if(item->getType()==JSON_ARRAY) {
+            genArray(item, indent+2, "["+std::to_string(idx++)+"]");
+        } else {
+            genObject(item, indent+2, "["+std::to_string(idx++)+"]");
+        }
+    }
+    fout << tab(indent) + "}\n";
+}
+
+void parser::genAtom(shared_ptr<json> value, int indent) {
+    assert(value->isAtom());
     switch(value->getType()) {
         case JSON_NULL: 
             fout << tab(indent) + std::to_string(node_id++) + " [label=\"null\"]\n";
-            break;
+            return;
         case JSON_BOOLEAN: 
             fout << tab(indent) + std::to_string(node_id++) + " [label=\"" + (value->getB() ? "true" : "false") + "\"]\n";
-            break;
+            return;
         case JSON_NUMBER: 
-            fout << tab(indent) + std::to_string(node_id++) + " [label=\"" + std::to_string(value->getNum()) + "\"]\n";
-            break;
-        case JSON_STRING: 
+            fout << tab(indent) + std::to_string(node_id++) + " [label=\"" + toString(value->getNum()) + "\"]\n";
+            return;
+        default: //string 
             fout << tab(indent) + std::to_string(node_id++) + " [label=\"" + value->getValue() + "\"]\n";
-            break;
-        case JSON_ARRAY:
-            {
-                auto array = value->getArray();
-                for(auto& item : array) {
-                    genElement(item, indent);
-                }
-            }
-            break;
-        default: 
-            genObject(value, indent);
+            return;
     }
 }
 
@@ -254,7 +287,10 @@ void parser::show(string file, string json_file) {
         std::cerr << "Can't open the file!" << std::endl;
         exit(1);
     } 
-    fout << "graph {\n" + tab(1) + "node [shape=box, color=cadetblue, style=filled]\n" + tab(1) + "label = \"" + json_file + "\"\n";
+    fout << "digraph {\n" + tab(1) + "node [shape=ellipse, color=cadetblue, style=filled]\n" + 
+        tab(1) + "label = \"" + json_file + "\"\n" + 
+        tab(1) + "edge [minlen=0.1]\n" + 
+        tab(1) + "compound = true\n";
     genObject(rt, 1);
     fout << "}";
     fout.close();
@@ -270,7 +306,7 @@ int main(int argc, char *argv[]) {
     p.init(json_file);
     p.rt = p.parse();
     if(p.rt!=nullptr) {
-        std::cout << p.rt->toString() << std::endl;
+        std::cout << p.rt->dump() << std::endl;
         p.show("tmp.dot", json_file);
     }
     return 0;

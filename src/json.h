@@ -43,7 +43,8 @@ public:
     string getValue();
     vector<shared_ptr<json>>& getArray();
     vector<pair<string, shared_ptr<json>>>& getObject();
-    string toString(int indent=0);
+    bool isAtom();
+    string dump(int indent=0);
 };
 
 class parser {
@@ -58,8 +59,9 @@ public:
     bool match(string s);
     void init(string file);
     shared_ptr<json> parse();
-    void genElement(shared_ptr<json> value, int indent);
-    void genObject(shared_ptr<json> rt, int indent);
+    void genAtom(shared_ptr<json> value, int indent);
+    void genObject(shared_ptr<json> rt, int indent, string label="");
+    void genArray(shared_ptr<json> value, int indent, string label="");
     void show(string file, string json_file);
 };
 
